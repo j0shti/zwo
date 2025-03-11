@@ -58,7 +58,7 @@ c_bin=600 # 1/2 of the crop size (depneds on the variable 'binning')
 ## Set gain, exposure, and observation interval
 Gain=0
 Exposure=15000000 #[micro second]
-Interval=60 # [second] time interval between the each image
+Interval=20 # [second] time interval between the each image
 Marginal=3 # [second] time for checking the validity of the first target observation time (3 seconds -> relaxed too much? RPI's performance...)
 ##
 ## Set the prefix of the output image's filename
@@ -75,8 +75,8 @@ import os
 ####
 #### Directory settings
 user=os.getlogin()
-out_paren_dir='/ASC_DATA/'+user+'/' # output file path
-log_dir='/home/'+user+'/logs/'
+out_paren_dir='~/cam/zwo/output' # output file path
+log_dir='~/cam/zwo/output'
 log1=log_dir+'log_ASC_control.log' # logfile that errors are recorded mainly
 ####
 ##########--------------------------------------------------------##########
@@ -122,7 +122,7 @@ log1=log_dir+'log_ASC_control.log' # logfile that errors are recorded mainly
 ####@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@####
 
 
-Initial_sleep_time=0 # Sleep time for the safety preventing unstopable reboot (It can be omitted in the final version in the future)
+Initial_sleep_time=5 # Sleep time for the safety preventing unstopable reboot (It can be omitted in the final version in the future)
 print('Start ASC control code - Waiting '+str(Initial_sleep_time)+' sec')
 os.system('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Start ASC control code - Waiting '+str(Initial_sleep_time)+' seconds >> '+log1)
 time.sleep(Initial_sleep_time)
@@ -189,8 +189,7 @@ site.lon=location['lon']
 ##
 
 ## Load the shared library into c types
-asi=c.CDLL("/home/"+user+"/asi_env/lib/python3.7/asi_project/ZWO_SDK/http://libASICamera2.so__;!!DLa72PTfQgg!KQIGbB4motUzBOSFmjW-jnF1LDLYTT7ES0zAXDNfDayGpZU_PoNFC4DtHV6ytVfl_-p84WbxrW2p9hlC-4pI$ ")
-##
+asi=c.CDLL("~/cam/zwo/ASI_linux_mac_SDK_V1.37/lib/armv8/libASICamera2.so")
 
 numCam=asi.ASIGetNumOfConnectedCameras()
 print('## Number of Connected ZWO Cameras: {0}'.format(numCam)) # Get the number of the connected cameras
@@ -298,7 +297,7 @@ while True: # This is non-escapable loop
     sun=ephem.Sun(site)
     sun_alt=sun.alt*180/np.pi
     ##
-    if sun_alt <= alt_cutoff: # Check observation condition
+    if True: # Check observation condition
         print("Sun's elevation: GOOD ({0:6.2f} deg)".format(sun_alt))
         wait_time=(target_UT_UNIX - time.time())
         if wait_time > 1:
