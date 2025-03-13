@@ -124,7 +124,7 @@ log1=log_dir+'log_ASC_control.log' # logfile that errors are recorded mainly
 
 Initial_sleep_time=5 # Sleep time for the safety preventing unstopable reboot (It can be omitted in the final version in the future)
 print('Start ASC control code - Waiting '+str(Initial_sleep_time)+' sec')
-os.system('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Start ASC control code - Waiting '+str(Initial_sleep_time)+' seconds >> '+log1)
+print('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Start ASC control code - Waiting '+str(Initial_sleep_time)+' seconds >> '+log1)
 time.sleep(Initial_sleep_time)
 
 
@@ -198,11 +198,11 @@ print('## Number of Connected ZWO Cameras: {0}'.format(numCam)) # Get the number
 if numCam==0:
     print('## -> No camera detected')
     print('Need to reboot?')
-    os.system('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Checking camera - No camera detected [Start rebooting] >> '+log1)
+    print('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Checking camera - No camera detected [Start rebooting] >> '+log1)
     os.system('sudo reboot')
 elif numCam==1:
     print('## -> 1 camera detected')
-    os.system('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Checking camera - 1 camera detected [Start observation] >> '+log1)
+    print('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Checking camera - 1 camera detected [Start observation] >> '+log1)
 else:
     print('## -> Multiple cameras detected')
     print('What will you do?')
@@ -243,7 +243,7 @@ stat=asi.ASICloseCamera(camInfo.CameraID)
 stat=asi.ASIOpenCamera(camInfo.CameraID)
 print('... Open camera (status={0})'.format(stat))
 if stat!=0:
-    os.system('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Cannot open camera [Stat='+str(stat)+'] - Initial camera openning failed [Start rebooting] >> '+log1)
+    print('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Cannot open camera [Stat='+str(stat)+'] - Initial camera openning failed [Start rebooting] >> '+log1)
     os.system('sudo reboot')
 
 '''
@@ -260,15 +260,15 @@ for i in range(numCtrl.value):
 
 ## Prepare camera
 stat=asi.ASIInitCamera(camInfo.CameraID) # Initialize Camera
-os.system('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Prepare camera - Initialize camera [Stat='+str(stat)+'] >> '+log1)
+print('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Prepare camera - Initialize camera [Stat='+str(stat)+'] >> '+log1)
 stat=asi.ASISetROIFormat(camInfo.CameraID, imgWidth, imgHeight, binning, imgType) # Set ROI format
-os.system('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Prepare camera - Set ROI format [Stat='+str(stat)+'] >> '+log1)
+print('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Prepare camera - Set ROI format [Stat='+str(stat)+'] >> '+log1)
 stat=asi.ASISetStartPos(camInfo.CameraID, 0, 0) # Set start position
-os.system('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Prepare camera - Set start position [Stat='+str(stat)+'] >> '+log1)
+print('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Prepare camera - Set start position [Stat='+str(stat)+'] >> '+log1)
 stat=asi.ASISetControlValue(camInfo.CameraID, 0, Gain, False) # Set Camera control value (Gain)
-os.system('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Prepare camera - Set camera gain [Stat='+str(stat)+'] >> '+log1)
+print('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Prepare camera - Set camera gain [Stat='+str(stat)+'] >> '+log1)
 stat=asi.ASISetControlValue(camInfo.CameraID, 1, Exposure, False) # Set Camera control value (Exposure time)
-os.system('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Prepare camera - Set camera exposure [Stat='+str(stat)+'] >> '+log1)
+print('echo "'+'$(date +"%F %T %Z")'+'" [INITIAL] Prepare camera - Set camera exposure [Stat='+str(stat)+'] >> '+log1)
 ##
 
 
@@ -338,13 +338,13 @@ while True: # This is non-escapable loop
                         print('...... !Cannot stop exposure')
                         numCam=asi.ASIGetNumOfConnectedCameras() # Check the number of the connected camera
                         if numCam==0:
-                            os.system('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Cannot stop exposure [expStat='+str(expStat.value)+'] - No camera detected [Start rebooting] >> '+log1)
+                            print('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Cannot stop exposure [expStat='+str(expStat.value)+'] - No camera detected [Start rebooting] >> '+log1)
                             print('...... Cannot find camera write log for USB devices and reboot')
                             os.system("dmesg -T | grep -i usb > '"+log_dir+"USBstat_'"+'"$(date +"%F_%H%M%S")"'+"'.log'")
                             os.system('sudo reboot')
                         else:
-#                            os.system('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Cannot stop exposure [expStat='+str(expStat.value)+'] - Camera detected [Attempt reloading camera] >> '+log1)
-                            os.system('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Cannot stop exposure [expStat='+str(expStat.value)+'] - Camera detected [Start rebooting] >> '+log1)
+#                            print('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Cannot stop exposure [expStat='+str(expStat.value)+'] - Camera detected [Attempt reloading camera] >> '+log1)
+                            print('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Cannot stop exposure [expStat='+str(expStat.value)+'] - Camera detected [Start rebooting] >> '+log1)
                             os.system('sudo reboot')
                         '''
                         print('...... Reload the camera')
@@ -354,9 +354,9 @@ while True: # This is non-escapable loop
                         stat=asi.ASIGetCameraProperty(c.byref(camInfo),camIdx)
                         stat=asi.ASIOpenCamera(camInfo.CameraID)
                         if stat!=0: # Failed to reload camera
-                            os.system('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Cannot open camera [Stat='+str(stat)+'] - Reloading camera failed [Start rebooting] >> '+log1)
+                            print('echo "'+'$(date +"%F %T %Z")'+'" [ ERROR ] Cannot open camera [Stat='+str(stat)+'] - Reloading camera failed [Start rebooting] >> '+log1)
                             os.system('sudo reboot')
-                        os.system('echo "'+'$(date +"%F %T %Z")'+'" [RECOVER] Reloading camera successed - System back to normal status [Keep going] >> '+log1)
+                        print('echo "'+'$(date +"%F %T %Z")'+'" [RECOVER] Reloading camera successed - System back to normal status [Keep going] >> '+log1)
                         stat=asi.ASIInitCamera(camInfo.CameraID)
                         stat=asi.ASISetROIFormat(camInfo.CameraID, imgWidth, imgHeight, binning, imgType)
                         stat=asi.ASISetStartPos(camInfo.CameraID, 0, 0)
