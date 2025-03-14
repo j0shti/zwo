@@ -75,8 +75,8 @@ import os
 ####
 #### Directory settings
 user=os.getlogin()
-out_paren_dir='~/cam/zwo/output/' # output file path
-log_dir='~/cam/zwo/output'
+out_paren_dir='./output/' # output file path
+log_dir='./output'
 log1=log_dir+'log_ASC_control.log' # logfile that errors are recorded mainly
 ####
 ##########--------------------------------------------------------##########
