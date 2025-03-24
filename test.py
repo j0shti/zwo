@@ -44,7 +44,7 @@
 
 ##########------------------------SETTINGS------------------------##########
 #### Site settings
-location={'lat':'-72.32','lon':'170.23','elevation':3}
+location={'lat':'40.735657','lon':'-74.172363','elevation':3}
 #location={'lat':'37.05','lon':'126.71','elevation':0}
 alt_cutoff = -10 #[Degree]
 ####
@@ -297,7 +297,7 @@ while True: # This is non-escapable loop
     sun=ephem.Sun(site)
     sun_alt=sun.alt*180/np.pi
     ##
-    if True: # Check observation condition
+    if sun_alt <= alt_cutoff: # Check observation condition
         print("Sun's elevation: GOOD ({0:6.2f} deg)".format(sun_alt))
         wait_time=(target_UT_UNIX - time.time())
         if wait_time > 1:
