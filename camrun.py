@@ -383,9 +383,9 @@ while True: # This is non-escapable loop
                     img=img.crop((cx-c_bin,cy-c_bin,cx+c_bin,imgHeight-1)) # Crop image for saving storage
         
                     try:
-                        os.mkdir(out_full_dir) # Make output directory
+                        os.system('sudo mkdir ' + out_full_dir)
                     except FileExistsError:
-                        continue
+                        continue  
 
                     img.save(out_full_dir+device_name+'_'+TIMESTAMP+Exp_tag+'.png') # Save image
                     target_UT_UNIX=time.mktime(target_UT_time) + Interval # prepare UNIX time of the next target obs. time
