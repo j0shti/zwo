@@ -383,7 +383,7 @@ while True: # This is non-escapable loop
                     img=img.crop((cx-c_bin,cy-c_bin,cx+c_bin,imgHeight-1)) # Crop image for saving storage
         
                     try:
-                        os.mkdir(out_full_dir,exist_ok=True) # Make output directory
+                        os.mkdir(out_full_dir) # Make output directory
                     except FileExistsError:
                         continue
 
