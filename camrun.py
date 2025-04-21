@@ -381,7 +381,14 @@ while True: # This is non-escapable loop
                     print('... Get image buffer (status={0})'.format(stat))
                     img=Image.frombuffer(buffMode,(imgWidth,imgHeight),fb,'raw',buffMode,0,1) # Get image from Buffer
                     img=img.crop((cx-c_bin,cy-c_bin,cx+c_bin,imgHeight-1)) # Crop image for saving storage
-                    os.makedirs(out_full_dir,mode=0o777,exist_ok=True) # Make output directory
+                    
+                    # attempt to ignore permissions 
+                    try:
+                        original_umask = os.umask(0)
+                        os.makedirs(out_full_dir,exist_ok=True) # Make output directory
+                    finally:
+                        os.umask(original_umask)
+                    
                     img.save(out_full_dir+device_name+'_'+TIMESTAMP+Exp_tag+'.png') # Save image
                     target_UT_UNIX=time.mktime(target_UT_time) + Interval # prepare UNIX time of the next target obs. time
                     target_UT_time=time.localtime(target_UT_UNIX) # Convert UNIX time of the next target obs. time to UT timestamp (tuple)
