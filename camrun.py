@@ -75,9 +75,11 @@ import os
 ####
 #### Directory settings
 user=os.getlogin()
-out_paren_dir='/mnt/photo-storage/OUTPUT/' # output file path
+out_paren_dir='/mnt/photo-storage/' # output file path
 log_dir='./output'
 log1=log_dir+'log_ASC_control.log' # logfile that errors are recorded mainly
+
+os.system('sudo chmod 777 /mnt/photo-storage') # to ensure we can create files and access the drive
 ####
 ##########--------------------------------------------------------##########
 
