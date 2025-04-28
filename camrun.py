@@ -334,8 +334,8 @@ while True: # This is non-escapable loop
     sun_alt=sun.alt*180/np.pi
     ##
     if True: # Check observation condition
-        print(TEMPHUM.grabTemp())
-        print(TEMPHUM.grabHum())
+        print(TEMPHUM().grabTemp())
+        print(TEMPHUM().grabHum())
 
         print("Sun's elevation: GOOD ({0:6.2f} deg)".format(sun_alt))
         wait_time=(target_UT_UNIX - time.time())
