@@ -70,6 +70,7 @@ import ctypes as c
 import time
 import numpy as np
 import ephem
+import smbus
 from PIL import Image
 import os
 ####
@@ -81,7 +82,18 @@ log1=log_dir+'log_ASC_control.log' # logfile that errors are recorded mainly
 
 os.system('sudo chmod 777 /mnt/photo-storage') # to ensure we can create files and access the drive
 ####
+
+#### Temperature settings
+
+i2cbus = smbus.SMBus(1)
+i2caddress = 0x40
+tempaddress = 0x00
+humaddress = 0x01
+
+####
 ##########--------------------------------------------------------##########
+
+
 
 ####@@@@@@@@@@@@@@@@@@@ Information for ZWO ASI SDK @@@@@@@@@@@@@@@@@@@@####
 # List of ASI_ERROR_CODE
@@ -183,6 +195,31 @@ class ASI_CONTROL_CAPS(c.Structure):
         ]
 ##
 
+## Class for Temperature/Humidity Grabbing and serialization into EXIF
+class TEMPHUM:
+    def grabTemp(self): 
+        i2cbus.write_byte(i2caddress, tempaddress) 
+        time.sleep(0.3)
+
+        byte1 = i2cbus.read_byte(i2caddress)
+        byte2 = i2cbus.read_byte(i2caddress)
+        time.sleep(0.3)
+        word = byte1 << 8 | byte2
+
+        return (word * 165 / 65535.0) - 40.0 # returns temperature
+    def grabHum(self):
+        i2cbus.write_byte(i2caddress, humaddress) 
+        time.sleep(0.3)
+
+        byte1 = i2cbus.read_byte(i2caddress)
+        byte2 = i2cbus.read_byte(i2caddress)
+        time.sleep(0.3)
+
+        word = byte1 << 8 | byte2
+
+        return (word / 65535.0) * 100 # returns relative humidity (%)
+
+
 ## Prepare body for ephem module
 site=ephem.Observer()
 site.lat=location['lat']
@@ -239,7 +276,7 @@ Fin_sleep_time=(Interval-Exposure/1000000)*0.1 # [second]
 print('## List of Cameras')
 print('CamID={0}, CamName:{1}'.format(camInfo.CameraID,str(camInfo.Name)[2:-1]))
 
-# Close camera before openning camera
+# Close camera before opening camera
 stat=asi.ASICloseCamera(camInfo.CameraID)
 # Open camera
 stat=asi.ASIOpenCamera(camInfo.CameraID)
@@ -300,6 +337,9 @@ while True: # This is non-escapable loop
     sun_alt=sun.alt*180/np.pi
     ##
     if True: # Check observation condition
+        print(TEMPHUM().grabTemp())
+        print(TEMPHUM().grabHum())
+
         print("Sun's elevation: GOOD ({0:6.2f} deg)".format(sun_alt))
         wait_time=(target_UT_UNIX - time.time())
         if wait_time > 1:
