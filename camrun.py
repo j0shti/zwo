@@ -203,6 +203,7 @@ class TEMPHUM:
 
         byte1 = i2cbus.read_byte(i2caddress)
         byte2 = i2cbus.read_byte(i2caddress)
+        time.sleep(0.3)
         word = byte1 << 8 | byte2
 
         return (word * 165 / 65535.0) - 40.0 # returns temperature
@@ -212,6 +213,8 @@ class TEMPHUM:
 
         byte1 = i2cbus.read_byte(i2caddress)
         byte2 = i2cbus.read_byte(i2caddress)
+        time.sleep(0.3)
+
         word = byte1 << 8 | byte2
 
         return (word / 65535.0) * 100 # returns relative humidity (%)
@@ -273,7 +276,7 @@ Fin_sleep_time=(Interval-Exposure/1000000)*0.1 # [second]
 print('## List of Cameras')
 print('CamID={0}, CamName:{1}'.format(camInfo.CameraID,str(camInfo.Name)[2:-1]))
 
-# Close camera before openning camera
+# Close camera before opening camera
 stat=asi.ASICloseCamera(camInfo.CameraID)
 # Open camera
 stat=asi.ASIOpenCamera(camInfo.CameraID)
