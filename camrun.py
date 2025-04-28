@@ -338,7 +338,7 @@ while True: # This is non-escapable loop
     ##
     if True: # Check observation condition
         log_file = open(out_full_dir+'dailylog.txt','a+')
-        log_file.write(TIMESTAMP+Exp_tag + '\t' + '- TEMP / HUM: ' + TEMPHUM().grabTemp() + '° C / ' +TEMPHUM().grabHum() + '%RH')
+        log_file.write(TIMESTAMP+Exp_tag + '\t' + '- TEMP / HUM: ' + TEMPHUM().grabTemp() + '° C / ' +TEMPHUM().grabHum() + '%RH' + '\n')
         log_file.close()
 
         print("Sun's elevation: GOOD ({0:6.2f} deg)".format(sun_alt))
