@@ -325,6 +325,12 @@ target_UT_time=time.localtime(target_UT_UNIX) # Convert UNIX time of the target 
 
 while True: # This is non-escapable loop
 
+    ## ensure SSD is still connected
+    try:
+        os.system('fdisk /dev/sda/')
+    except FileNotFoundError:
+        os.system('sudo reboot')
+
 
     YYYY=str(target_UT_time.tm_year)
     MM=(str(target_UT_time.tm_mon)).zfill(2)
