@@ -327,7 +327,7 @@ while True: # This is non-escapable loop
 
     ## ensure SSD is still connected
     try:
-        os.system('fdisk /dev/sda/')
+        os.system('sudo fdisk -l /dev/sda/')
     except FileNotFoundError:
         os.system('sudo reboot')
 
