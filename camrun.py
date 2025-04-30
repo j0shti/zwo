@@ -337,13 +337,6 @@ while True: # This is non-escapable loop
     sun_alt=sun.alt*180/np.pi
     ##
     if True: # Check observation condition
-        try:
-            log_file = open(out_full_dir+'dailylog.txt','a+')
-        except FileNotFoundError:
-            log_file = open(out_full_dir+'dailylog.txt','w+')
-        log_file.write(TIMESTAMP+Exp_tag + '\t' + '- TEMP / HUM: ' + str(TEMPHUM().grabTemp()) + '° C / ' + str(TEMPHUM().grabHum()) + ' %RH' + '\n')
-        log_file.close()
-
         print("Sun's elevation: GOOD ({0:6.2f} deg)".format(sun_alt))
         wait_time=(target_UT_UNIX - time.time())
         if wait_time > 1:
@@ -429,6 +422,14 @@ while True: # This is non-escapable loop
                     img=img.crop((cx-c_bin,cy-c_bin,cx+c_bin,imgHeight-1)) # Crop image for saving storage
                     os.makedirs(out_full_dir,exist_ok=True) # Make output directory
                     img.save(out_full_dir+device_name+'_'+TIMESTAMP+Exp_tag+'.png') # Save image
+
+                    ## write humidity and temp data
+                    log_file = open(out_full_dir + 'dailylog.txt', 'a+')
+                    log_file.write(
+                    TIMESTAMP + Exp_tag + '\t' + '- TEMP / HUM: ' + str(TEMPHUM().grabTemp()) + '° C / ' + str(
+                    TEMPHUM().grabHum()) + ' %RH' + '\n')
+                    log_file.close()
+
                     target_UT_UNIX=time.mktime(target_UT_time) + Interval # prepare UNIX time of the next target obs. time
                     target_UT_time=time.localtime(target_UT_UNIX) # Convert UNIX time of the next target obs. time to UT timestamp (tuple)
                     break # Breaker for the 2nd WHILE loop (Camera control finished for this target obs. time)
