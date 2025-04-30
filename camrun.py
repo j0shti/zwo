@@ -337,7 +337,10 @@ while True: # This is non-escapable loop
     sun_alt=sun.alt*180/np.pi
     ##
     if True: # Check observation condition
-        log_file = open(out_full_dir+'dailylog.txt','a+')
+        try:
+            log_file = open(out_full_dir+'dailylog.txt','a+')
+        except FileNotFoundError:
+            log_file = open(out_full_dir+'dailylog.txt','w')
         log_file.write(TIMESTAMP+Exp_tag + '\t' + '- TEMP / HUM: ' + str(TEMPHUM().grabTemp()) + '° C / ' + str(TEMPHUM().grabHum()) + ' %RH' + '\n')
         log_file.close()
 
