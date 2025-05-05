@@ -347,8 +347,8 @@ while True: # This is non-escapable loop
             + str(humidity) + ' %RH' + '\n')
         log_file.close()
 
-        os.system('echo NOT SAFE FOR CONSTANT USAGE, RESTARTING AND WAITING' + rebootWait + ' MINUTE(S)')
-        os.system('sudo shutdown -r ' + rebootWait)
+        os.system('echo NOT SAFE FOR CONSTANT USAGE, RESTARTING')
+        os.system('sudo reboot')
 
     if True: # Check observation condition
         print("Sun's elevation: GOOD ({0:6.2f} deg)".format(sun_alt))
