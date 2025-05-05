@@ -64,6 +64,9 @@ Marginal=3 # [second] time for checking the validity of the first target observa
 ## Set the prefix of the output image's filename
 device_name='KAGO-ASC3'
 ##
+## Set time between reboot
+rebootWait = 1
+##
 ####
 #### Import external libraries
 import ctypes as c
@@ -333,6 +336,20 @@ while True: # This is non-escapable loop
     sun=ephem.Sun(site)
     sun_alt=sun.alt*180/np.pi
     ##
+
+    temperature = TEMPHUM().grabTemp()
+    humidity = TEMPHUM().grabHum()
+
+    if (temperature > 100 or temperature < 20) or humidity > 80: # Check temperature and humidity conditions
+        log_file = open(out_full_dir + 'dailylog.txt', 'a+')
+        log_file.write(
+            TIMESTAMP + Exp_tag + '\t' + ' ERROR CONDITIONS ARE NOT SUITABLE FOR RUNNING' + '\t' + '- TEMP / HUM: ' + str(temperature) + '° C / '
+            + str(humidity) + ' %RH' + '\n')
+        log_file.close()
+
+        os.system('echo NOT SAFE FOR CONSTANT USAGE, RESTARTING AND WAITING' + rebootWait + ' MINUTE(S)')
+        os.system('sudo shutdown -r ' + rebootWait)
+
     if True: # Check observation condition
         print("Sun's elevation: GOOD ({0:6.2f} deg)".format(sun_alt))
         wait_time=(target_UT_UNIX - time.time())
@@ -423,8 +440,8 @@ while True: # This is non-escapable loop
                     ## write humidity and temp data
                     log_file = open(out_full_dir + 'dailylog.txt', 'a+')
                     log_file.write(
-                    TIMESTAMP + Exp_tag + '\t' + '- TEMP / HUM: ' + str(TEMPHUM().grabTemp()) + '° C / ' + str(
-                    TEMPHUM().grabHum()) + ' %RH' + '\n')
+                    TIMESTAMP + Exp_tag + '\t' + '- TEMP / HUM: ' + str(temperature) + '° C / '
+                    + str(humidity) + ' %RH' + '\n')
                     log_file.close()
 
                     target_UT_UNIX=time.mktime(target_UT_time) + Interval # prepare UNIX time of the next target obs. time
