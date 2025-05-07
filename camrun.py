@@ -58,7 +58,7 @@ c_bin=600 # 1/2 of the crop size (depneds on the variable 'binning')
 ## Set gain, exposure, and observation interval
 Gain=0
 Exposure=15000000 #[micro second]
-Interval=30 # [second] time interval between the each image
+Interval=60 # [second] time interval between the each image
 Marginal=3 # [second] time for checking the validity of the first target observation time (3 seconds -> relaxed too much? RPI's performance...)
 ##
 ## Set the prefix of the output image's filename
@@ -347,7 +347,7 @@ while True: # This is non-escapable loop
             + str(humidity) + ' %RH' + '\n')
         log_file.close()
 
-        os.system('echo NOT SAFE FOR CONSTANT USAGE, RESTARTING')
+        print('NOT SAFE FOR CONSTANT USAGE, RESTARTING')
         os.system('sudo reboot')
 
     if True: # Check observation condition
