@@ -474,7 +474,7 @@ while True: # This is non-escapable loop
                     log_file.close()
 
                     ## set autoexposure to adjust camera sensitivity
-                    os.system(' echo ' + autoexp().setexp(img, Exposure))
+                    os.system(' echo ' + str(autoexp().setexp(img, Exposure)))
 
                     target_UT_UNIX=time.mktime(target_UT_time) + Interval # prepare UNIX time of the next target obs. time
                     target_UT_time=time.localtime(target_UT_UNIX) # Convert UNIX time of the next target obs. time to UT timestamp (tuple)
