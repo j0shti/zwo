@@ -195,7 +195,7 @@ class ASI_CONTROL_CAPS(c.Structure):
         ]
 ##
 
-## Class for Temperature/Humidity Grabbing and serialization into EXIF
+## Class for Temperature/Humidity Grabbing
 class TEMPHUM:
     def grabTemp(self): 
         i2cbus.write_byte(i2caddress, tempaddress) 
@@ -219,6 +219,35 @@ class TEMPHUM:
 
         return (word / 65535.0) * 100 # returns relative humidity (%)
 
+
+## Class for Camera Autoexposure -- Joey's code
+class autoexp:
+    def setexp(self, image, exposure):
+        pixel_array = np.array(image)
+        height, width = pixel_array.shape
+        square_height = height // 5
+        square_width = width // 5
+
+        max_avg = -1
+        max_coords = (0, 0)
+
+        for i in range(5):
+            for j in range(5):
+                top = i * square_height
+                bottom = (i + 1) * square_height
+                left = j * square_width
+                right = (j + 1) * square_width
+                square = pixel_array[top:bottom, left:right]
+                avg = square.mean()
+                if avg > max_avg:
+                    max_avg = avg
+
+        if max_avg > 999:  # CHOOSE UPPER THRESHOLD
+            exposure += ( 5 * 10^6 )
+        if max_avg < -999:  # CHOOSE LOWER THRESHOLD
+            exposure -= (5 * 10^6 )
+
+        return exposure
 
 ## Prepare body for ephem module
 site=ephem.Observer()
@@ -443,6 +472,9 @@ while True: # This is non-escapable loop
                     TIMESTAMP + Exp_tag + '\t' + '- TEMP / HUM: ' + str(temperature) + '° C / '
                     + str(humidity) + ' %RH' + '\n')
                     log_file.close()
+
+                    ## set autoexposure to adjust camera sensitivity
+                    os.system(' echo ' + autoexp(img, Exposure))
 
                     target_UT_UNIX=time.mktime(target_UT_time) + Interval # prepare UNIX time of the next target obs. time
                     target_UT_time=time.localtime(target_UT_UNIX) # Convert UNIX time of the next target obs. time to UT timestamp (tuple)
