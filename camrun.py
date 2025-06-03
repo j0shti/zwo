@@ -64,6 +64,9 @@ Marginal=3 # [second] time for checking the validity of the first target observa
 ## Set the prefix of the output image's filename
 device_name='KAGO-ASC3'
 ##
+## Set time between reboot
+rebootWait = 1
+##
 ####
 #### Import external libraries
 import ctypes as c
@@ -75,12 +78,9 @@ from PIL import Image
 import os
 ####
 #### Directory settings
-user=os.getlogin()
 out_paren_dir='/mnt/photo-storage/' # output file path
 log_dir='./output'
 log1=log_dir+'log_ASC_control.log' # logfile that errors are recorded mainly
-
-os.system('sudo chmod 777 /mnt/photo-storage') # to ensure we can create files and access the drive
 ####
 
 #### Temperature settings
@@ -228,7 +228,7 @@ site.lon=location['lon']
 ##
 
 ## Load the shared library into c types
-asi=c.CDLL("./ASI_linux_mac_SDK_V1.37/lib/armv8/libASICamera2.so")
+asi=c.CDLL("/home/lab/cam/zwo/ASI_linux_mac_SDK_V1.37/lib/armv8/libASICamera2.so")
 
 numCam=asi.ASIGetNumOfConnectedCameras()
 print('## Number of Connected ZWO Cameras: {0}'.format(numCam)) # Get the number of the connected cameras
@@ -336,10 +336,21 @@ while True: # This is non-escapable loop
     sun=ephem.Sun(site)
     sun_alt=sun.alt*180/np.pi
     ##
-    if True: # Check observation condition
-        print(TEMPHUM().grabTemp())
-        print(TEMPHUM().grabHum())
 
+    temperature = TEMPHUM().grabTemp()
+    humidity = TEMPHUM().grabHum()
+
+    if (temperature > 80 or temperature < -40) or humidity > 80: # Check temperature and humidity conditions
+        log_file = open(out_full_dir + 'dailylog.txt', 'a+')
+        log_file.write(
+            TIMESTAMP + Exp_tag + '\t' + ' ERROR CONDITIONS ARE NOT SUITABLE FOR RUNNING' + '\t' + '- TEMP / HUM: ' + str(temperature) + '° C / '
+            + str(humidity) + ' %RH' + '\n')
+        log_file.close()
+
+        print('NOT SAFE FOR USAGE, RESTARTING')
+        os.system('sudo reboot')
+
+    if True: # Check observation condition
         print("Sun's elevation: GOOD ({0:6.2f} deg)".format(sun_alt))
         wait_time=(target_UT_UNIX - time.time())
         if wait_time > 1:
@@ -425,6 +436,14 @@ while True: # This is non-escapable loop
                     img=img.crop((cx-c_bin,cy-c_bin,cx+c_bin,imgHeight-1)) # Crop image for saving storage
                     os.makedirs(out_full_dir,exist_ok=True) # Make output directory
                     img.save(out_full_dir+device_name+'_'+TIMESTAMP+Exp_tag+'.png') # Save image
+
+                    ## write humidity and temp data
+                    log_file = open(out_full_dir + 'dailylog.txt', 'a+')
+                    log_file.write(
+                    TIMESTAMP + Exp_tag + '\t' + '- TEMP / HUM: ' + str(temperature) + '° C / '
+                    + str(humidity) + ' %RH' + '\n')
+                    log_file.close()
+
                     target_UT_UNIX=time.mktime(target_UT_time) + Interval # prepare UNIX time of the next target obs. time
                     target_UT_time=time.localtime(target_UT_UNIX) # Convert UNIX time of the next target obs. time to UT timestamp (tuple)
                     break # Breaker for the 2nd WHILE loop (Camera control finished for this target obs. time)
