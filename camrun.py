@@ -347,7 +347,7 @@ while True: # This is non-escapable loop
             + str(humidity) + ' %RH' + '\n')
         log_file.close()
 
-        print('NOT SAFE FOR CONSTANT USAGE, RESTARTING')
+        print('NOT SAFE FOR USAGE, RESTARTING')
         os.system('sudo reboot')
 
     if True: # Check observation condition
