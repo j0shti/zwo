@@ -340,7 +340,7 @@ while True: # This is non-escapable loop
     temperature = TEMPHUM().grabTemp()
     humidity = TEMPHUM().grabHum()
 
-    if (temperature > 30 or temperature < 20) or humidity > 80: # Check temperature and humidity conditions
+    if (temperature > 28 or temperature < 20) or humidity > 80: # Check temperature and humidity conditions
         log_file = open(out_full_dir + 'dailylog.txt', 'a+')
         log_file.write(
             TIMESTAMP + Exp_tag + '\t' + ' ERROR CONDITIONS ARE NOT SUITABLE FOR RUNNING' + '\t' + '- TEMP / HUM: ' + str(temperature) + '° C / '
