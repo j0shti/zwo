@@ -78,8 +78,9 @@ from PIL import Image
 import os
 ####
 #### Directory settings
-out_paren_dir='/mnt/photo-storage/' # output file path
-log_dir='./output'
+user = os.getlogin()
+out_paren_dir='/media/' # output file path
+log_dir='/logs'
 log1=log_dir+'log_ASC_control.log' # logfile that errors are recorded mainly
 ####
 
@@ -242,6 +243,8 @@ class autoexp:
                 if avg > max_avg:
                     max_avg = avg
 
+        os.system("echo " + max_avg + " is the current average of the image")
+
         if max_avg > 999:  # CHOOSE UPPER THRESHOLD
             exposure += ( 5 * 10^6 )
         if max_avg < -999:  # CHOOSE LOWER THRESHOLD
@@ -257,7 +260,7 @@ site.lon=location['lon']
 ##
 
 ## Load the shared library into c types
-asi=c.CDLL("/home/lab/cam/zwo/ASI_linux_mac_SDK_V1.37/lib/armv8/libASICamera2.so")
+asi=c.CDLL("/home/" + user + "/ALL-SKY-IMAGER/ASI_linux_mac_SDK_V1.37/lib/armv8/libASICamera2.so")
 
 numCam=asi.ASIGetNumOfConnectedCameras()
 print('## Number of Connected ZWO Cameras: {0}'.format(numCam)) # Get the number of the connected cameras
@@ -470,7 +473,8 @@ while True: # This is non-escapable loop
                     log_file = open(out_full_dir + 'dailylog.txt', 'a+')
                     log_file.write(
                     TIMESTAMP + Exp_tag + '\t' + '- TEMP / HUM: ' + str(temperature) + '° C / '
-                    + str(humidity) + ' %RH' + '\n')
+                    + str(humidity) + ' %RH' + '\n'
+                    )
                     log_file.close()
 
                     ## set autoexposure to adjust camera sensitivity
